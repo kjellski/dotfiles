@@ -1,21 +1,23 @@
 #!/bin/bash
 
-BASE_DIR=/tmp
+# store the folder we're coming from, we'll restore this eventually
+SCRIPT_BASEFOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# load logging
+. $SCRIPT_BASEFOLDER/lib/log.sh
 
-NOW=`date +"%F_%T"`
-echo "NOW: ${NOW}"
+BASE_DIR=/tmp #this will be $HOME after testing
+
+NOW=`date +"%F_%T"` # used to form the backup folder for this run.
 BACKUP_FOLDER=$BASE_DIR/backups/$NOW
 
 # change to the directory this file is laying around
-pushd pwd
 
-echo `pwd`
+log "BACKUP_FOLDER: ${BACKUP_FOLDER}"
 
 # function to backup the given file
 # is backup folder existing?
 function backup_file {
     create_backup_folder
-
 }
 # function to create the backup folder
 function create_backup_folder() {
@@ -31,5 +33,6 @@ function create_backup_folder() {
 # if existing, backup
 # copy over the replacement
 
-popd
-echo `pwd`
+
+# correctly exist the program with the last commands exit code.
+exit
