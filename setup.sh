@@ -24,18 +24,6 @@ info "using profile ${PROFILE}, therefor folder: ${PROFILE_FOLDER}"
 # ----------------------------------------------------------------------------
 # functions to help actually do stuff
 # ----------------------------------------------------------------------------
-# function to backup the given file
-# is backup folder existing?
-function backup_file ()
-{
-    create_backup_folder
-    if [ -e $BACKUP_FOLDER/$1 ]; then
-        error "the file $1 was existing in the backup folder. won't go on, would mean we are overriding existing files. do that harm yourself please."
-        log "[FAILURE]"
-        exit -1
-    fi
-    log "cp $1 to $BACKUP_FOLDER"
-}
 # function to create the backup folder, if existing, does nothing.
 function create_backup_folder() {
     if [ ! -d $BACKUP_FOLDER ]; then
@@ -44,25 +32,35 @@ function create_backup_folder() {
     fi
 }
 
-# deploys the file given as argument to $DEPLOY_DIR
-function deploy_file () {
-    backup_file $1
-    # cp $1 BAS
-    log "cp $1 to $DEPLOY_DIR/.$1"
+# function to backup the given file
+function backup_file ()
+{
+    # create the backup folder
+    create_backup_folder
+    
+    # is the file existing? if so, exist, don't do harmful shit here...
+    if [ -e $BACKUP_FOLDER/$1 ]; then
+        error "the file $1 was existing in the backup folder. won't go on, would mean we are overriding existing files. do that harm yourself please."
+        log "[FAILURE]"
+        exit -1
+    fi
+    cp -i $1 $BACKUP_FOLDER
 }
 
-# function to copy the given file to $BASE_DIR
-
-# function to test for a files existence
-# if existing, backup
-# copy over the replacement
+# deploys the file given as argument to $DEPLOY_DIR
+function deploy_file () {
+    # if the file exists, back it up, no matter what
+    backup_file $DEPLOY_DIR/.$1
+    # copy the file from profiles folder over to deploy folder
+    cp -i $PROFILE_FOLDER/$1 $DEPLOY_DIR/.$1
+}
 
 # ----------------------------------------------------------------------------
 # deploy files for profile
 # ----------------------------------------------------------------------------
 for file in $PROFILE_FOLDER/* ; do
     # info "deploying file: $file ..."
-    deploy_file $file
+    deploy_file ${file##*/}
     info "$file deployed."
 done
 
