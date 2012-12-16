@@ -13,7 +13,12 @@ The basic profile is compatible. Maybe I'll add my vundle and advanced, more cus
 Run the following command in your terminal.
 It will backup before it does anything destructive(into backup/datetime/). 
 
-Feel free to customize all the .* files.
+```terminal
+git clone git://github.com/kjellski/dotfiles.git && \
+cd dotfiles && \
+./dotfiles --help
+```
+Feel free to customize all the files in the folders under profiles.
 
 ## Requirements
 Really, just bash, no rvm, no ruby, no python no nothing, except bash.

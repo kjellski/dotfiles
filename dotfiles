@@ -57,15 +57,18 @@ function deploy_file () {
     backup_file $DEPLOY_DIR/.$1
     # copy the file from profiles folder over to deploy folder
     cp -i $PROFILE_FOLDER/$1 $DEPLOY_DIR/.$1
+    if [ $? -eq 1 ]; then
+        warn ".$1 NOT deployed"
+    else
+        info "$PROFILE_FOLDER/$1 deployed to $DEPLOY_DIR/.$1"
+    fi
 }
 
 # ----------------------------------------------------------------------------
 # deploy files for profile
 # ----------------------------------------------------------------------------
 for file in $PROFILE_FOLDER/* ; do
-    # info "deploying file: $file ..."
     deploy_file ${file##*/}
-    info "$file deployed."
 done
 
 log "[SUCCESS]"
