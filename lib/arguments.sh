@@ -4,26 +4,6 @@
 # arguments parsing
 # ----------------------------------------------------------------------------
 
-# gets the second part of an option to the first part, e.g. -t or -p
-function validate_profile() {
-    # if the path does not exist.
-    if [ ! -d $PROFILES_FOLDER/$1 ]; then
-        usage_error_exit "the path \"$PROFILES_FOLDER/$1\" for argument \"-p|--profile\" does not exist"
-    fi
-    # return the valid profile
-    $1
-}
-
-# sets the target folder to deploy to
-function validate_target() {
-    # if the path does not exist.
-    if [ ! -d $1 ]; then
-        usage_error_exit "the path \"$1\" for argument \"-t|--target\" does not exist"
-    fi
-    # return the valid profile
-    $1
-}
-
 # prints the usage to standard out
 function usage() {
     cat << EOF
@@ -46,4 +26,26 @@ function usage_error_exit() {
     usage
     error $1
     exit 1
+}
+
+# gets the second part of an option to the first part, e.g. -t or -p
+function validate_profile() {
+    # if the path does not exist.
+    if [ ! -d $PROFILES_FOLDER/$1 ]; then
+        usage_error_exit "the path \"$PROFILES_FOLDER/$1\" for argument \"-p|--profile\" does not exist"
+    fi
+    # return the valid profile
+    echo $1
+}
+
+# sets the target folder to deploy to
+function validate_target() {
+    # if the path does not exist.
+    echo VALIDATE TARGET
+    echo $1
+    if [ ! -d $1 ]; then
+        usage_error_exit "the path \"$1\" for argument \"-t|--target\" does not exist"
+    fi
+    # return the valid profile
+    echo $1
 }

@@ -27,26 +27,31 @@ info "folder for profiles is: $PROFILES_FOLDER"
 
 # print info for these later
 PROFILE=$DEFAULT_PROFILE
+info "using profile: $PROFILE"
 PROFILE_FOLDER=$PROFILES_FOLDER/$PROFILE
+info "using profile folder: $PROFILE_FOLDER"
 
 # ----------------------------------------------------------------------------
 # arguments parsing
 # ----------------------------------------------------------------------------
 # use getopts for command line arguments and option parsing.
 # good link: http://aplawrence.com/Unix/getopts.html
+set -x
 while [ "$1" != "" ]
 do
     case $1 in
         -t | --target )
             # shift the first part of the argument
             shift
-            DEPLOY_DIR=validate_target $1
+            DEPLOY_DIR=$(validate_target $1)
             ;;
         -p | --profile )
             # shift the first part of the argument
             shift
-            PROFILE=validate_profile $1
+            PROFILE=$(validate_profile $1)
+            info "using profile: $PROFILE"
             PROFILE_FOLDER=$PROFILES_FOLDER/$PROFILE
+            info "using profile folder: $PROFILE_FOLDER"
             ;;
         -v | --verbose )
             VERBOSE=1
@@ -61,7 +66,7 @@ do
     # remove the argument from arglist
     shift
 done
-
+set +x
 # ----------------------------------------------------------------------------
 # print out all the options we'll be using
 # ----------------------------------------------------------------------------
@@ -74,7 +79,7 @@ info "using profile ${PROFILE}, therefor folder: ${PROFILE_FOLDER}"
 function create_backup_folder() {
     if [ ! -d $BACKUP_FOLDER ]; then
         mkdir -p $BACKUP_FOLDER
-        warn "created backup folder: $BACKUP_FOLDER"
+        info "created backup folder: $BACKUP_FOLDER"
     fi
 }
 
