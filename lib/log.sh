@@ -12,7 +12,9 @@ function error() {
 }
 
 function info() {
-    log "[INFO] : $@"
+    if [ $VERBOSE -eq 1 ]; then
+        log "[INFO] : $@"
+    fi
 }
 
 function warn() {

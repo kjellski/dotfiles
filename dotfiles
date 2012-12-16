@@ -1,52 +1,16 @@
 #!/bin/bash
-VERBOSE=0;
 # store the folder we're coming from, we'll restore this eventually
 SCRIPT_BASEFOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # load logging
 . $SCRIPT_BASEFOLDER/lib/log.sh
-
-# ----------------------------------------------------------------------------
-# arguments
-# ----------------------------------------------------------------------------
-function usage() {
-    cat << EOF
-usage: dotfiles [-h|--help] [-v|--verbose] [(-p|--profile) <profile>]
-
-This programm is used to create or copy terminal and editor dotfiles from the choosen profiles folder to the \${HOME} folder.
-The default profile is compatible. This is normally giving a [~]$ like promt, a bit of bash colors and default vim settings to behave sane.
-
-Arguments:
-    -p | --profile  usese the given profile
-    -v | --verbose  shows verbose output
-    -h | --help     displays this text
-
-    
-EOF
-}
-
-# use getopts for command line arguments and option parsing.
-# good link: http://aplawrence.com/Unix/getopts.html
-while [ "$1" != "" ]
-do
-    case $1 in
-        -v | --verbose )
-            VERBOSE=1
-            ;;
-        -h | --help ) 
-            usage
-            exit 
-            ;;
-        * )
-            usage
-            error "illigal option: \"$1\", aborting."
-            exit 1
-    esac
-    shift
-done
+. $SCRIPT_BASEFOLDER/lib/arguments.sh
 
 # ----------------------------------------------------------------------------
 # basic setup
 # ----------------------------------------------------------------------------
+# enables printing of info statements when not 0
+VERBOSE=0;
+
 DEPLOY_DIR=/tmp #this will be $HOME after testing
 info "this scipt will deploy to this folder: ${DEPLOY_DIR}"
 
@@ -55,9 +19,52 @@ BACKUP_FOLDER=$DEPLOY_DIR/backups/$NOW
 info "backup folder is: ${BACKUP_FOLDER}"
 
 # think for future profiles feature, not too coasty
-DEFAULT_PROFILE=profiles/compatible
+DEFAULT_PROFILE=compatible
+info "default profile is: $DEFAULT_PROFILE"
+
+PROFILES_FOLDER=$SCRIPT_BASEFOLDER/profiles
+info "folder for profiles is: $PROFILES_FOLDER"
+
+# print info for these later
 PROFILE=$DEFAULT_PROFILE
-PROFILE_FOLDER=$SCRIPT_BASEFOLDER/$PROFILE
+PROFILE_FOLDER=$PROFILES_FOLDER/$PROFILE
+
+# ----------------------------------------------------------------------------
+# arguments parsing
+# ----------------------------------------------------------------------------
+# use getopts for command line arguments and option parsing.
+# good link: http://aplawrence.com/Unix/getopts.html
+while [ "$1" != "" ]
+do
+    case $1 in
+        -t | --target )
+            # shift the first part of the argument
+            shift
+            DEPLOY_DIR=validate_target $1
+            ;;
+        -p | --profile )
+            # shift the first part of the argument
+            shift
+            PROFILE=validate_profile $1
+            PROFILE_FOLDER=$PROFILES_FOLDER/$PROFILE
+            ;;
+        -v | --verbose )
+            VERBOSE=1
+            ;;
+        -h | --help ) 
+            usage
+            exit 
+            ;;
+        * )
+            usage_error_exit "illigal option: \"$1\", aborting."
+    esac
+    # remove the argument from arglist
+    shift
+done
+
+# ----------------------------------------------------------------------------
+# print out all the options we'll be using
+# ----------------------------------------------------------------------------
 info "using profile ${PROFILE}, therefor folder: ${PROFILE_FOLDER}"
 
 # ----------------------------------------------------------------------------
@@ -67,7 +74,7 @@ info "using profile ${PROFILE}, therefor folder: ${PROFILE_FOLDER}"
 function create_backup_folder() {
     if [ ! -d $BACKUP_FOLDER ]; then
         mkdir -p $BACKUP_FOLDER
-        log "created backup folder: $BACKUP_FOLDER"
+        warn "created backup folder: $BACKUP_FOLDER"
     fi
 }
 
