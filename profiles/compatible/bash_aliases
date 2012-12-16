@@ -1,0 +1,39 @@
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    eval "`dircolors -b`"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+
+    alias lg='ls -lAh | grep --color=auto' # results
+    alias li='ls -lAh | grep --color=auto -v' # inverted results
+fi
+
+# some more ls aliases
+alias ll='ls -lh'
+alias la='ls -lAh'
+alias l='ls -CFh'
+alias lh='ls -lh'
+alias mv='mv -b'
+alias cl='clear'
+alias cd..='cd ..'
+alias psg='ps aux | grep '
+
+# git aliases
+alias gis='git status'
+alias gic='git commit -m '
+alias gia='git add -A .'
+alias gip='git push'
+
+function gimm () {
+    ACTUAL_BRANCH=`git branch --no-color | sed -e 's/^\* //'`
+    git checkout master && git merge $ACTUAL_BRANCH && git checkout $ACTUAL_BRANCH
+}
+export -f gimm
+
+
+alias tg='tree $1 | ack --passthru --color '

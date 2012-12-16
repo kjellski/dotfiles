@@ -1,17 +1,52 @@
 #!/bin/bash
-
+VERBOSE=0;
 # store the folder we're coming from, we'll restore this eventually
 SCRIPT_BASEFOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # load logging
 . $SCRIPT_BASEFOLDER/lib/log.sh
 
 # ----------------------------------------------------------------------------
-# basic setup
+# arguments
 # ----------------------------------------------------------------------------
+function usage() {
+    cat << EOF
+usage: dotfiles [-h|--help] [-v|--verbose] [(-p|--profile) <profile>]
+
+This programm is used to create or copy terminal and editor dotfiles from the choosen profiles folder to the \${HOME} folder.
+The default profile is compatible. This is normally giving a [~]$ like promt, a bit of bash colors and default vim settings to behave sane.
+
+Arguments:
+    -p | --profile  usese the given profile
+    -v | --verbose  shows verbose output
+    -h | --help     displays this text
+
+    
+EOF
+}
 
 # use getopts for command line arguments and option parsing.
 # good link: http://aplawrence.com/Unix/getopts.html
+while [ "$1" != "" ]
+do
+    case $1 in
+        -v | --verbose )
+            VERBOSE=1
+            ;;
+        -h | --help ) 
+            usage
+            exit 
+            ;;
+        * )
+            usage
+            error "illigal option: \"$1\", aborting."
+            exit 1
+    esac
+    shift
+done
 
+# ----------------------------------------------------------------------------
+# basic setup
+# ----------------------------------------------------------------------------
 DEPLOY_DIR=/tmp #this will be $HOME after testing
 info "this scipt will deploy to this folder: ${DEPLOY_DIR}"
 
@@ -20,7 +55,7 @@ BACKUP_FOLDER=$DEPLOY_DIR/backups/$NOW
 info "backup folder is: ${BACKUP_FOLDER}"
 
 # think for future profiles feature, not too coasty
-DEFAULT_PROFILE=compatible
+DEFAULT_PROFILE=profiles/compatible
 PROFILE=$DEFAULT_PROFILE
 PROFILE_FOLDER=$SCRIPT_BASEFOLDER/$PROFILE
 info "using profile ${PROFILE}, therefor folder: ${PROFILE_FOLDER}"

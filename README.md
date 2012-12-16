@@ -1,6 +1,7 @@
 # @kjellski Dot Files
 
-These are my very own dotfiles. In order to speed up the setup of new Bash_able machines. 
+
+These are my very own dotfiles. In order to speed up the setup of new bashable machines(pun intendet). 
 The requirements for this are now: 
 
 ```terminal
@@ -18,13 +19,18 @@ git clone git://github.com/kjellski/dotfiles.git && \
 cd dotfiles && \
 ./dotfiles --help
 ```
+
 Feel free to customize all the files in the folders under profiles.
 
 ## Requirements
 Really, just bash, no rvm, no ruby, no python no nothing, except bash.
-
 You will get git completion and a nice promt with branch info when you've installed it but it's optional.
 
 ## Uninstall
-
 At some point in time, I'll provide an uninstall task. :/ hopefully soon.
+
+## Author
+For bugs and hints as well as other suggestions, contact:
+@kjellski on twitter
+also, file pulls here:
+https://github.com/kjellski/dotfiles
