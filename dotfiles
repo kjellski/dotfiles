@@ -8,6 +8,10 @@ SCRIPT_BASEFOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # ----------------------------------------------------------------------------
 # basic setup
 # ----------------------------------------------------------------------------
+
+# use getopts for command line arguments and option parsing.
+# good link: http://aplawrence.com/Unix/getopts.html
+
 DEPLOY_DIR=/tmp #this will be $HOME after testing
 info "this scipt will deploy to this folder: ${DEPLOY_DIR}"
 
