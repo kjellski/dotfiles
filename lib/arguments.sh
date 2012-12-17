@@ -37,10 +37,10 @@ function validate_path() {
 
 # gets the second part of an option to the first part, e.g. -t or -p
 function validate_profile() {
-    echo `validate_path $PROFILES_FOLDER/$1`
+    validate_path $PROFILES_FOLDER/$1 && echo $?
 }
 
 # sets the target folder to deploy to
 function validate_target() {
-    echo `validate_path $1`
+    validate_path $1 && echo $?
 }

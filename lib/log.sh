@@ -12,8 +12,12 @@ function error() {
 }
 
 function info() {
+    log "[INFO]: $@"
+}
+
+function verbose() {
     if [ $VERBOSE -eq 1 ]; then
-        log "[INFO] : $@"
+        log "[VERBOSE] : $@"
     fi
 }
 
