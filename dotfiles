@@ -34,21 +34,18 @@ info "using profile folder: $PROFILE_FOLDER"
 # ----------------------------------------------------------------------------
 # arguments parsing
 # ----------------------------------------------------------------------------
-# use getopts for command line arguments and option parsing.
-# good link: http://aplawrence.com/Unix/getopts.html
-set -x
 while [ "$1" != "" ]
 do
     case $1 in
         -t | --target )
             # shift the first part of the argument
             shift
-            DEPLOY_DIR=$(validate_target $1)
+            DEPLOY_DIR=`validate_target $1`
             ;;
         -p | --profile )
             # shift the first part of the argument
             shift
-            PROFILE=$(validate_profile $1)
+            PROFILE=`validate_profile $1`
             info "using profile: $PROFILE"
             PROFILE_FOLDER=$PROFILES_FOLDER/$PROFILE
             info "using profile folder: $PROFILE_FOLDER"
@@ -66,11 +63,6 @@ do
     # remove the argument from arglist
     shift
 done
-set +x
-# ----------------------------------------------------------------------------
-# print out all the options we'll be using
-# ----------------------------------------------------------------------------
-info "using profile ${PROFILE}, therefor folder: ${PROFILE_FOLDER}"
 
 # ----------------------------------------------------------------------------
 # functions to help actually do stuff
@@ -89,11 +81,21 @@ function backup_file ()
     # create the backup folder
     create_backup_folder
     
+    # if the file is not existing, we don't need to back it up...
+    if [ ! -e $1 ]; then
+        return 0
+    fi
+
+    # if the file is a symlink
+    if [ -h $1 ]; then
+        warn "backing up symbolic link, this was not the real file."
+    fi
+
     # is the file existing? if so, exist, don't do harmful shit here...
     if [ -e $BACKUP_FOLDER/$1 ]; then
         error "the file $1 was existing in the backup folder. won't go on, would mean we are overriding existing files. do that harm yourself please."
         log "[FAILURE]"
-        exit -1
+        exit 1
     fi
     cp -i $1 $BACKUP_FOLDER
 }
