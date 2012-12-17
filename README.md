@@ -5,7 +5,7 @@ These are my very own dotfiles. In order to speed up the setup of new bashable m
 The requirements for this are now: 
 
 ```terminal
-bash
+bash, curl 
 ```
 Therefor, I would like to integrate profiles later, but for now, this is just maximally compatible.
 The basic profile is compatible. Maybe I'll add my vundle and advanced, more customized stuff later.
@@ -14,6 +14,11 @@ The basic profile is compatible. Maybe I'll add my vundle and advanced, more cus
 Run the following command in your terminal.
 It will backup before it does anything destructive(into backup/datetime/). 
 
+Automatic Installation:
+
+TODO: build something similar to this - curl -L https://get.rvm.io | bash -s stable --ruby
+
+Manual Installation:
 ```terminal
 git clone git://github.com/kjellski/dotfiles.git && \
 cd dotfiles && \
