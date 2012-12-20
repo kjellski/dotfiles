@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+import argparse
+
+parser = argparse.ArgumentParser(description='''A ~/.files profile management. 
+        This program tries to never harm any existing environment. 
+        It backs up every file it should deploy and every deploy is linked to for later referenece.''',
+        epilog='author: @kjellski')
+parser.add_argument('-p', '--profile', help='selects the profile to be deployed')
+parser.add_argument('-t', '--target', help='selects the folder to deploy in, if not existent, will be created')
+
+args = parser.parse_args()
+
