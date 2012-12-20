@@ -10,6 +10,13 @@ bash, curl
 Therefor, I would like to integrate profiles later, but for now, this is just maximally compatible.
 The basic profile is compatible. Maybe I'll add my vundle and advanced, more customized stuff later.
 
+## How it works
+
+The script will do three things in general for each call.
+1. Create a backup folder for things that it finds are existing and copies them over to this folder.
+2. Copy the whole folder of the profile that should be used over to the active folder
+3. Create a link from the users home folder for each file or directory in the active directory
+
 ## Installation
 Run the following command in your terminal.
 It will backup before it does anything destructive(into backup/datetime/). 
