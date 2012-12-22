@@ -4,41 +4,68 @@ from lib.DotFile import DotFile
 
 # ------------------------------------------------------------------
 # Arguments and defaults
+# ------------------------------------------------------------------
 parser = argparse.ArgumentParser(description='''A ~/.files profile management. 
     This program tries to never harm any existing environment. 
     It backs up every file it should deploy and every deploy is linked to for later referenece.''',
-    epilog='author: @kjellski')
+    epilog='author: @kjellski',
+    prog='dotfiles')
 parser.add_argument('-p', 
     '--profile', 
     help='selects the profile to be deployed', 
-    default='compatible')
+    default='testing')
 parser.add_argument('-t', 
     '--target', 
     help='selects the folder to deploy in, if not existent, will be created', 
     default='tmp')
+parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.0')
+parser.add_argument('-d', 
+    '--verbose',
+    help='''sets the verbosity of this script, multiple 
+    vs will make it more verbose''',
+    action='count',
+    # hack, stands DEBUG when ERROR..
+    default=logging.INFO/10) 
+
 args = parser.parse_args()
-print args
+# set the loglevel for the -vvvv option
+logging.basicConfig(format='%(levelname)s: %(message)s', 
+    level=(5 - args.verbose)*10)
 
-profiles_folder = 'profiles'
-backups_folder = os.path.join('backups', datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
-working_folder = 'active'
-target_folder = args.target
+logging.debug('Starting with these parameters:')
+for arg, value in sorted(vars(args).items()):
+    logging.debug("%s: %r", arg, value)
 
-# complete path of profile
-profile_path = os.path.abspath(os.path.join(profiles_folder, args.profile))
+# folder conatining all the profiles, like the default one.
+profile_path = os.path.abspath(os.path.join('profiles', args.profile))
+logging.info('profile_path: ' + profile_path)
 
-backup_path = os.path.abspath(os.path.join(backups_folder, datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")))
+# folder for all backups, timestamped subdirs will be created
+backup_path = os.path.abspath(os.path.join('backups', datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")))
+logging.info('backup_path: ' + backup_path)
 DotFile.backup_path = backup_path
 
-working_path = os.path.abspath(working_folder)
-DotFile.working_path = working_path
+# folder conatining the working copy of the profile used.
+working_path = os.path.abspath('active')
+logging.info('working_path: ' + working_path)
+DotFile.profile_path = working_path
 
-target_path = target_folder
+# folder to deploy the whole dotfiles to
+target_path = args.target
+logging.info('target_path: ' + target_path)
 DotFile.target_path = target_path
 
-# now check for the folder existence
+# now check for the profile folders existence
 if not os.path.exists(profile_path):
     logging.error('The profile was not found: ' + profile_path)
+    sys.exit(-1)
+
+# create the target folder
+try: 
+    os.makedirs(target_path)
+    logging.info('The target was not found, created folder: ' + target_path)
+except Exception, e:
+    pass
 
 # ------------------------------------------------------------------
 # copy over the profile to the operationing folder
@@ -50,9 +77,8 @@ try:
 except Exception, e:
     logging.error(e)
     logging.error('Unable to copy the profile to the working folder, exiting.')
-    parser.usage
     sys.exit()
 
 for file in os.listdir(working_path):
-    DotFile(os.path.abspath(os.path.join(working_path, file)))
-
+    f = DotFile(file)
+    f.link()
