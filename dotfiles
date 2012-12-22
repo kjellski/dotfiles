@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse, os, logging, datetime, shutil, sys
+from lib.DotFile import DotFile
 
 # ------------------------------------------------------------------
 # Arguments and defaults
@@ -14,18 +15,26 @@ parser.add_argument('-p',
 parser.add_argument('-t', 
     '--target', 
     help='selects the folder to deploy in, if not existent, will be created', 
-    default='/tmp')
+    default='tmp')
 args = parser.parse_args()
 print args
 
 profiles_folder = 'profiles'
-backups_folder = 'backups'
+backups_folder = os.path.join('backups', datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
 working_folder = 'active'
+target_folder = args.target
 
 # complete path of profile
 profile_path = os.path.abspath(os.path.join(profiles_folder, args.profile))
+
 backup_path = os.path.abspath(os.path.join(backups_folder, datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")))
+DotFile.backup_path = backup_path
+
 working_path = os.path.abspath(working_folder)
+DotFile.working_path = working_path
+
+target_path = target_folder
+DotFile.target_path = target_path
 
 # now check for the folder existence
 if not os.path.exists(profile_path):
@@ -35,7 +44,7 @@ if not os.path.exists(profile_path):
 # copy over the profile to the operationing folder
 try:
     #if the working copy of the wokring profile exists, delete it.
-    os.removedirs(working_path)
+    shutil.rmtree(working_path)
     # copy over the working profile
     shutil.copytree(profile_path, working_path)
 except Exception, e:
@@ -44,5 +53,6 @@ except Exception, e:
     parser.usage
     sys.exit()
 
-for file in os.listdir(inuse_folder):
-    print file
+for file in os.listdir(working_path):
+    DotFile(os.path.abspath(os.path.join(working_path, file)))
+
