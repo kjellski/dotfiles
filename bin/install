@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-# original code license credits: 
-#
-# modified for dotfiles from @kjellski 
-#
-# Copyright (c) 2009-2011 Wayne E. Seguin
+# Copyright (c) 2013-2014 Kjell Otto aka @kjellski 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -35,13 +31,15 @@ log() { printf "%b\n" "$*" ; return $? ; }
 
 fail() { log "\nERROR: $*\n" ; exit 1 ; }
 
+GITHUB_USERNAME=kjellski
+
 #Searches for highest available version for the given pattern
 # fetch_version 1.10. -> 1.10.3
 # fetch_version 1. -> 1.11.0
 # fetch_version "" -> 2.0.1
 fetch_version()
 {
-    curl -s https://api.github.com/repos/kjellski/dotfiles/tags |
+    curl -s https://api.github.com/repos/$GITHUB_USERNAME/dotfiles/tags |
         sed -n '/"name": / {s/^.*".*": "\(.*\)".*$/\1/; p;}' |
         sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n |
         GREP_OPTIONS="" \grep "^${1:-}" | tail -n 1
@@ -53,8 +51,9 @@ install_release()
     _version=$(fetch_version "")
     log "Downloading dotfiles version ${_version}"
     get_and_unpack \
-        https://github.com/kjellski/dotfiles/tarball/${_version} \
-        dotfiles-${_version}.tar.gz 
+        https://github.com/$GITHUB_USERNAME/dotfiles/archive/${_version}.tar.gz \
+        ${_version}.tar.gz \
+        dotfiles-${_version}
 }
 
 get_and_unpack()
@@ -62,9 +61,11 @@ get_and_unpack()
     typeset _url _file
     _url=$1
     _file=$2
+    _extracted=$3
     
     # stop this if the archive or directory exists...
-    if [[ -e $_file ]] || [[ -e .dotfiles ]]; then
+    if [  -e $_file  -o  -e .dotfiles  ]
+    then
         fail "archive or dotfiles already here, won't delete it."
     fi
 
@@ -94,11 +95,13 @@ Could not download '${_url}'.
 
     echo "_url: ${_url}"
     echo "_file: ${_file}"
-
-    exit 
+    echo "_extracted: ${_extracted}"
 
     # unpack! 
     tar zxf "${_file}"
+    rm -f "${_file}"
+
+    mv $_extracted dotfiles
 }
 
 install_release

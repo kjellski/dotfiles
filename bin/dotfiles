@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description='''A ~/.files profile management.
 parser.add_argument('-p', 
     '--profile', 
     help='selects the profile to be deployed', 
-    default='testing')
+    default='compatible')
 parser.add_argument('-t', 
     '--target', 
     help='selects the folder to deploy in, if not existent, will be created', 
