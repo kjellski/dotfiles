@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+# original code license credits: 
+#
+# modified for dotfiles from @kjellski 
+#
+# Copyright (c) 2009-2011 Wayne E. Seguin
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+BASH_MIN_VERSION="3.2.25"
+if
+    [[ -n "${BASH_VERSION:-}" &&
+        "$(printf "%b" "${BASH_VERSION:-}\n${BASH_MIN_VERSION}\n" | LC_ALL=C sort -n -t"." | head -n1)" != "${BASH_MIN_VERSION}"
+    ]]
+then
+    echo "BASH ${BASH_MIN_VERSION} required (you have $BASH_VERSION)"
+    exit 1
+fi
+
+shopt -s extglob
+set -o errtrace
+set -o errexit
+
+log() { printf "%b\n" "$*" ; return $? ; }
+
+fail() { log "\nERROR: $*\n" ; exit 1 ; }
+
+#Searches for highest available version for the given pattern
+# fetch_version 1.10. -> 1.10.3
+# fetch_version 1. -> 1.11.0
+# fetch_version "" -> 2.0.1
+fetch_version()
+{
+    curl -s https://api.github.com/repos/kjellski/dotfiles/tags |
+        sed -n '/"name": / {s/^.*".*": "\(.*\)".*$/\1/; p;}' |
+        sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n |
+        GREP_OPTIONS="" \grep "^${1:-}" | tail -n 1
+}
+
+install_release()
+{
+    typeset _version
+    _version=$(fetch_version "")
+    log "Downloading dotfiles version ${_version}"
+    get_and_unpack \
+        https://github.com/kjellski/dotfiles/tarball/${_version} \
+        dotfiles-${_version}.tar.gz 
+}
+
+get_and_unpack()
+{
+    typeset _url _file
+    _url=$1
+    _file=$2
+    
+    # stop this if the archive or directory exists...
+    if [[ -e $_file ]] || [[ -e .dotfiles ]]; then
+        fail "archive or dotfiles already here, won't delete it."
+    fi
+
+    if curl -L ${_url} -o $_file
+    then
+        true
+    else
+        typeset ret=$?
+        case $ret in
+            (60)
+                log "
+Could not download '${_url}'.
+    Make sure your certificates are up to date as described above.
+    To continue in insecure mode run 'echo insecure >> ~/.curlrc'.
+"
+                return 60
+                ;;
+            (*)
+                log "
+Could not download '${_url}'.
+    curl returned status '$ret'.
+"
+                return 1
+                ;;
+        esac
+    fi
+
+    echo "_url: ${_url}"
+    echo "_file: ${_file}"
+
+    exit 
+
+    # unpack! 
+    tar zxf "${_file}"
+}
+
+install_release

@@ -66,7 +66,12 @@ except Exception, e:
 working_path = os.path.abspath('active')
 logging.info('working_path: ' + working_path)
 DotFile.profile_path = working_path
-
+# create the proper backup folder if not existing
+try: 
+    os.makedirs(working_path)
+    logging.debug('created working folder: ' + working_path)
+except Exception, e:
+    pass
 
 # ################################################################
 # folder to deploy the whole dotfiles to

@@ -1,4 +1,4 @@
 profiles/testing/
-backups/
 active/
+backups/
 *.pyc
