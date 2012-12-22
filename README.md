@@ -36,7 +36,7 @@ cd dotfiles && \
 Feel free to customize all the files in the folders under profiles.
 
 ## Requirements
-Really, just bash, no rvm, no ruby, no python no nothing, except bash.
+Really, just bash and python, which is quite more often arround then ruby.
 You will get git completion and a nice promt with branch info when you've installed it but it's optional.
 
 ## Uninstall
