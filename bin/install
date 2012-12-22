@@ -93,15 +93,21 @@ Could not download '${_url}'.
         esac
     fi
 
-    echo "_url: ${_url}"
-    echo "_file: ${_file}"
-    echo "_extracted: ${_extracted}"
+    # echo "_url: ${_url}"
+    # echo "_file: ${_file}"
+    # echo "_extracted: ${_extracted}"
 
     # unpack! 
     tar zxf "${_file}"
     rm -f "${_file}"
 
     mv $_extracted dotfiles
+
+    cd dotfiles
+
+    echo
+    ls -l
+    echo "dotfiles installed successfully"
 }
 
 install_release
