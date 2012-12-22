@@ -1,12 +1,13 @@
 #!/usr/bin/env python
-
-import os.path, datetime, logging, shutil, sys
+import os.path, datetime, logging, shutil, sys, pdb
 
 # this class represents a file of an profile
 # its able to create a backup of the original file
 # it will create a link to itself 
 class DotFile: 
 
+    # choosable prefix, maybe _ for windown?
+    fileprefix = '.'
     # where this file lies arround
     profile_path = os.path.join('tmp', 'test')
     # where this file should be deployed
@@ -17,15 +18,15 @@ class DotFile:
          datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
 
     # if file is not starting with ., add that
-    def __init__(self, filename):
-        if filename.startswith('.'):
-            self.filename = filename
+    def __init__(self, original_filename):
+        if original_filename.startswith(DotFile.fileprefix):
+            self.filename = original_filename
         else:
-            self.filename = '.' + filename
+            self.filename = '.' + original_filename
 
         self.target_file_path = os.path.join(DotFile.target_path, self.filename)
         self.backup_file_path = os.path.join(DotFile.backup_path, self.filename)
-        self.profiles_file_path = os.path.join(DotFile.profile_path, filename)
+        self.profiles_file_path = os.path.join(DotFile.profile_path, original_filename)
 
         logging.debug(self)
 
@@ -37,8 +38,8 @@ class DotFile:
         logging.info('linking from ' + self.profiles_file_path + \
             ' to ' + \
             self.target_file_path)
-
-        os.symlink(self.profiles_file_path, os.path.relpath(self.profiles_file_path, self.target_file_path))
+        # create the symlink for deployment
+        os.symlink(self.profiles_file_path, self.target_file_path)
 
     # creates a backup for the file 
     def backup(self):
@@ -48,11 +49,11 @@ class DotFile:
                 logging.info('backing up ' + self.target_file_path)
                 if os.path.isdir(self.target_file_path):
                     # copy whole tree over to backup folder
-                    shutil.copytree(self.target_file_path, DotFile.backup_path)
+                    shutil.copytree(self.target_file_path, self.backup_file_path)
                     logging.info('now deleting the backed up directory: ' + self.target_file_path)
                     # if the folder is a link, remove it like a file... 
                     if os.path.islink(self.target_file_path):
-                        os.remove(self.target_file_path)
+                        os.unlink(self.target_file_path)
                     else:
                         shutil.rmtree(self.target_file_path)
 
