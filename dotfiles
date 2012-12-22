@@ -1,41 +1,48 @@
 #!/usr/bin/env python
-import argparse, os, logging
-
-from shutil import copytree
+import argparse, os, logging, datetime, shutil, sys
 
 # ------------------------------------------------------------------
 # Arguments and defaults
 parser = argparse.ArgumentParser(description='''A ~/.files profile management. 
-  This program tries to never harm any existing environment. 
-  It backs up every file it should deploy and every deploy is linked to for later referenece.''',
-  epilog='author: @kjellski')
+    This program tries to never harm any existing environment. 
+    It backs up every file it should deploy and every deploy is linked to for later referenece.''',
+    epilog='author: @kjellski')
 parser.add_argument('-p', 
-  '--profile', 
-  help='selects the profile to be deployed', 
-  default='compatible')
+    '--profile', 
+    help='selects the profile to be deployed', 
+    default='compatible')
 parser.add_argument('-t', 
-  '--target', 
-  help='selects the folder to deploy in, if not existent, will be created', 
-  default='/tmp')
+    '--target', 
+    help='selects the folder to deploy in, if not existent, will be created', 
+    default='/tmp')
 args = parser.parse_args()
 print args
 
 profiles_folder = 'profiles'
 backups_folder = 'backups'
-inuse_folder = 'active'
+working_folder = 'active'
 
 # complete path of profile
 profile_path = os.path.abspath(os.path.join(profiles_folder, args.profile))
 backup_path = os.path.abspath(os.path.join(backups_folder, datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")))
-inuse_path = os.path.abspath(inuse_folder)
+working_path = os.path.abspath(working_folder)
 
 # now check for the folder existence
 if not os.path.exists(profile_path):
-  logging.error('The profile was not found: ' + profile_path)
+    logging.error('The profile was not found: ' + profile_path)
 
 # ------------------------------------------------------------------
 # copy over the profile to the operationing folder
 try:
-  shutil.copytree(profile_path, inuse_path)
+    #if the working copy of the wokring profile exists, delete it.
+    os.removedirs(working_path)
+    # copy over the working profile
+    shutil.copytree(profile_path, working_path)
 except Exception, e:
-  raise e
+    logging.error(e)
+    logging.error('Unable to copy the profile to the working folder, exiting.')
+    parser.usage
+    sys.exit()
+
+for file in os.listdir(inuse_folder):
+    print file
