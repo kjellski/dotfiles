@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import argparse, os, logging, datetime, shutil, sys
-from ..lib.DotFile import DotFile
+from lib.DotFile import DotFile
 
-# ------------------------------------------------------------------
+# ################################################################
 # Arguments and defaults
-# ------------------------------------------------------------------
+# ################################################################
 parser = argparse.ArgumentParser(description='''A ~/.files profile management. 
     This program tries to never harm any existing environment. 
     It backs up every file it should deploy and every deploy is linked to for later referenece.''',
@@ -17,7 +17,7 @@ parser.add_argument('-p',
 parser.add_argument('-t', 
     '--target', 
     help='selects the folder to deploy in, if not existent, will be created', 
-    default='tmp')
+    default='/tmp')
 parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.0')
 parser.add_argument('-d', 
     '--verbose',
@@ -36,29 +36,44 @@ logging.debug('Starting with these parameters:')
 for arg, value in sorted(vars(args).items()):
     logging.debug("%s: %r", arg, value)
 
+# ################################################################
 # folder conatining all the profiles, like the default one.
+# ################################################################
 profile_path = os.path.abspath(os.path.join('profiles', args.profile))
 logging.info('profile_path: ' + profile_path)
 
+# now check for the concrete profile folders existence
+if not os.path.exists(profile_path):
+    logging.error('The profile was not found: ' + profile_path)
+    sys.exit(-1)
+
+# ################################################################
 # folder for all backups, timestamped subdirs will be created
+# ################################################################
 backup_path = os.path.abspath(os.path.join('backups', datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")))
 logging.info('backup_path: ' + backup_path)
 DotFile.backup_path = backup_path
+# create the proper backup folder if not existing
+try: 
+    os.makedirs(backup_path)
+    logging.debug('created backup folder: ' + backup_path)
+except Exception, e:
+    pass
 
+# ################################################################
 # folder conatining the working copy of the profile used.
+# ################################################################
 working_path = os.path.abspath('active')
 logging.info('working_path: ' + working_path)
 DotFile.profile_path = working_path
 
+
+# ################################################################
 # folder to deploy the whole dotfiles to
+# ################################################################
 target_path = args.target
 logging.info('target_path: ' + target_path)
 DotFile.target_path = target_path
-
-# now check for the profile folders existence
-if not os.path.exists(profile_path):
-    logging.error('The profile was not found: ' + profile_path)
-    sys.exit(-1)
 
 # create the target folder
 try: 
@@ -67,8 +82,9 @@ try:
 except Exception, e:
     pass
 
-# ------------------------------------------------------------------
+# ################################################################
 # copy over the profile to the operationing folder
+# ################################################################
 try:
     #if the working copy of the wokring profile exists, delete it.
     shutil.rmtree(working_path)

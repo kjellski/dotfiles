@@ -9,13 +9,11 @@ class DotFile:
     # choosable prefix, maybe _ for windown?
     fileprefix = '.'
     # where this file lies arround
-    profile_path = os.path.join('tmp', 'test')
+    profile_path = os.path.join('tmp', 'profilenotexisting')
     # where this file should be deployed
-    target_path = os.path.join('tmp', 'target')
+    target_path = os.path.join('tmp', 'notexistingtarget')
     # if existing, where should the target file be copied to
-    backup_path = os.path.join('tmp', 
-        'backups',
-         datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
+    backup_path = os.path.join('tmp', 'notexistingbackups')
 
     # if file is not starting with ., add that
     def __init__(self, original_filename):
@@ -45,9 +43,10 @@ class DotFile:
     def backup(self):
         # does it exist? 
         if os.path.exists(self.target_file_path):
-            try:
+            # try:
                 logging.info('backing up ' + self.target_file_path)
                 if os.path.isdir(self.target_file_path):
+                
                     # copy whole tree over to backup folder
                     shutil.copytree(self.target_file_path, self.backup_file_path)
                     logging.info('now deleting the backed up directory: ' + self.target_file_path)
@@ -56,17 +55,19 @@ class DotFile:
                         os.unlink(self.target_file_path)
                     else:
                         shutil.rmtree(self.target_file_path)
-
+                
                 else:
+                    
                     # copy the file 
                     shutil.copyfile(self.target_file_path, self.backup_file_path)
                     logging.info('now deleting the backed up file: ' + self.target_file_path)
                     os.remove(self.target_file_path)
-
-            except Exception, e:
-                logging.error(e)
-                logging.error('while backing up, something failed, EXITING for data safety.')
-                sys.exit(-1)
+                    
+            # except Exception, e:
+            #     logging.error(e)
+            #     logging.error('while backing up, something failed, EXITING for data safety.')
+            #     raise e
+            #     sys.exit(-1)
 
     def __str__(self):
         return 'DotFile(' + \
