@@ -75,7 +75,7 @@ Branches:
 # fetch_version "" -> 2.0.1
 fetch_version()
 {
-  curl -s https://api.github.com/repos/wayneeseguin/rvm/tags |
+  curl -s https://api.github.com/repos/kjellski/dotfiles/tags |
     sed -n '/"name": / {s/^.*".*": "\(.*\)".*$/\1/; p;}' |
     sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n |
     GREP_OPTIONS="" \grep "^${1:-}" | tail -n 1
