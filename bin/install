@@ -64,7 +64,7 @@ get_and_unpack()
     _extracted=$3
     
     # stop this if the archive or directory exists...
-    if [  -e $_file  -o  -e .dotfiles  ]
+    if [  -e $_file  -o  -e dotfiles ]
     then
         fail "archive or dotfiles already here, won't delete it."
     fi

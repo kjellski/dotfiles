@@ -23,8 +23,9 @@ It will backup before it does anything destructive(into backup/datetime/).
 
 Automatic Installation:
 
-TODO: build something similar to this - curl -L https://get.rvm.io | bash -s stable --ruby
-
+```terminal
+curl -L https://raw.github.com/kjellski/dotfiles/master/bin/install | bash
+```
 Manual Installation:
 ```terminal
 git clone git://github.com/kjellski/dotfiles.git && \
