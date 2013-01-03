@@ -1,14 +1,13 @@
 # @kjellski Dot Files
 
-
 These are my very own dotfiles. In order to speed up the setup of new bashable machines(pun intendet). 
 The requirements for this are now: 
 
 ```terminal
-bash, curl 
+bash, curl and python
 ```
 Therefor, I would like to integrate profiles later, but for now, this is just maximally compatible.
-The basic profile is compatible. Maybe I'll add my vundle and advanced, more customized stuff later.
+The basic profile is '''compatible'''. Maybe I'll add my vundle and advanced, more customized stuff later.
 
 ## How it works
 
@@ -23,9 +22,11 @@ It will backup before it does anything destructive(into backup/datetime/).
 
 Automatic Installation:
 
+This will download the tgz file, unpack it, move it to ${HOME}/.dotfiles and deploy the compatible profile to ${HOME}
 ```terminal
 curl -L https://raw.github.com/kjellski/dotfiles/master/bin/install | bash
 ```
+
 Manual Installation:
 ```terminal
 git clone git://github.com/kjellski/dotfiles.git && \

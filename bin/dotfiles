@@ -18,7 +18,7 @@ parser.add_argument('-t',
     '--target', 
     help='selects the folder to deploy in, if not existent, will be created', 
     default='/tmp')
-parser.add_argument('-v', '--version', action='version', version='%(prog)s 2.0')
+parser.add_argument('-v', '--version', action='version', version='%(prog)s ')
 parser.add_argument('-d', 
     '--verbose',
     help='''sets the verbosity of this script, multiple 
@@ -36,10 +36,12 @@ logging.debug('Starting with these parameters:')
 for arg, value in sorted(vars(args).items()):
     logging.debug("%s: %r", arg, value)
 
+dotfiles_path = os.path.dirname(__file__)
+logging.debug("scripts basepath: " + dotfiles_path)
 # ################################################################
 # folder conatining all the profiles, like the default one.
 # ################################################################
-profile_path = os.path.abspath(os.path.join('profiles', args.profile))
+profile_path = os.path.join(dotfiles_path, 'profiles', args.profile)
 logging.info('profile_path: ' + profile_path)
 
 # now check for the concrete profile folders existence
@@ -50,7 +52,7 @@ if not os.path.exists(profile_path):
 # ################################################################
 # folder for all backups, timestamped subdirs will be created
 # ################################################################
-backup_path = os.path.abspath(os.path.join('backups', datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")))
+backup_path = os.path.join(dotfiles_path, 'backups', datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
 logging.info('backup_path: ' + backup_path)
 DotFile.backup_path = backup_path
 # create the proper backup folder if not existing
@@ -63,7 +65,7 @@ except Exception, e:
 # ################################################################
 # folder conatining the working copy of the profile used.
 # ################################################################
-working_path = os.path.abspath('active')
+working_path = os.path.join(dotfiles_path, 'active')
 logging.info('working_path: ' + working_path)
 DotFile.profile_path = working_path
 # create the proper backup folder if not existing
