@@ -101,13 +101,14 @@ Could not download '${_url}'.
     tar zxf "${_file}"
     rm -f "${_file}"
 
-    mv $_extracted dotfiles
+    mv $_extracted ${HOME}/.dotfiles
 
-    cd dotfiles
+    cd ${HOME}/.dotfiles
 
     echo
     ls -l
-    echo "dotfiles installed successfully"
+    echo "dotfiles installed successfully. now deploying the default \"compatible\" profile"
+    ./dotfiles
 }
 
 install_release
