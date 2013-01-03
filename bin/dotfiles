@@ -17,7 +17,7 @@ parser.add_argument('-p',
 parser.add_argument('-t', 
     '--target', 
     help='selects the folder to deploy in, if not existent, will be created', 
-    default='/tmp')
+    default=os.environ['HOME'])
 parser.add_argument('-v', '--version', action='version', version='%(prog)s ')
 parser.add_argument('-d', 
     '--verbose',
@@ -38,6 +38,14 @@ for arg, value in sorted(vars(args).items()):
 
 dotfiles_path = os.path.dirname(__file__)
 logging.debug("scripts basepath: " + dotfiles_path)
+
+# ask for writing to ${HOME}, be nice
+if args.target == os.environ['HOME']:
+    should_we_proceed = raw_input("You're about to deploy to your ${HOME} folder, are you sure? [y/N] ")
+    if should_we_proceed not in ['y', 'Y', 'Yes', 'YES']:
+        logging.info("Aborted by user.")
+        sys.exit()
+
 # ################################################################
 # folder conatining all the profiles, like the default one.
 # ################################################################
