@@ -39,12 +39,12 @@ for arg, value in sorted(vars(args).items()):
 dotfiles_path = os.path.dirname(__file__)
 logging.debug("scripts basepath: " + dotfiles_path)
 
-# ask for writing to ${HOME}, be nice
-if args.target == os.environ['HOME']:
-    should_we_proceed = raw_input("You're about to deploy to your ${HOME} folder, are you sure? [y/N] ")
-    if should_we_proceed not in ['y', 'Y', 'Yes', 'YES']:
-        logging.info("Aborted by user.")
-        sys.exit()
+## ask for writing to ${HOME}, be nice
+#if args.target == os.environ['HOME']:
+#    should_we_proceed = raw_input("You're about to deploy to your ${HOME} folder, are you sure? [y/N] ")
+#    if should_we_proceed not in ['y', 'Y', 'Yes', 'YES']:
+#        logging.info("Aborted by user.")
+#        sys.exit()
 
 # ################################################################
 # folder conatining all the profiles, like the default one.
@@ -56,6 +56,12 @@ logging.info('profile_path: ' + profile_path)
 if not os.path.exists(profile_path):
     logging.error('The profile was not found: ' + profile_path)
     sys.exit(-1)
+
+# if the profile is a git submodule, recursively init and update it.
+# git submodule update --init --recursive
+# put this into install, seems cleaner, maybe someone only wants to
+# do this at installation time and asking someone will be another 
+# question to be asked each run --> sucks
 
 # ################################################################
 # folder for all backups, timestamped subdirs will be created

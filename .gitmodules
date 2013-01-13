@@ -1,0 +1,3 @@
+[submodule "profiles/kjellski-mac"]
+	path = profiles/kjellski-mac
+	url = git@github.com:kjellski/kjellski-mac.git
