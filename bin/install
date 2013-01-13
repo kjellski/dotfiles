@@ -108,8 +108,6 @@ Could not download '${_url}'.
     echo
     ls -l
     echo "dotfiles installed successfully."
-    echo "looking for git submodules in profiles, recursively getting them."
-    git submodule update --init --recursive
     echo "now deploying the default \"compatible\" profile"
     ./dotfiles
 }
