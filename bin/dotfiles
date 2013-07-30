@@ -14,15 +14,19 @@ parser.add_argument('-p',
     '--profile', 
     help='selects the profile to be deployed', 
     default='compatible')
+# parser.add_argument('-l', 
+#     '--link', 
+#     help='just creates links to all files in the active profile', 
+#     default='false')
 parser.add_argument('-t', 
     '--target', 
-    help='selects the folder to deploy in, if not existent, will be created', 
+    help='selects the folder to deploy in, if not existent, will be created,. \nNote: DEFAULT is your $HOME', 
     default=os.environ['HOME'])
 parser.add_argument('-v', '--version', action='version', version='%(prog)s ')
 parser.add_argument('-d', 
     '--verbose',
     help='''sets the verbosity of this script, multiple 
-    vs will make it more verbose''',
+    ds will make it more verbose''',
     action='count',
     # hack, stands DEBUG when ERROR..
     default=logging.INFO/10) 
@@ -36,15 +40,16 @@ logging.debug('Starting with these parameters:')
 for arg, value in sorted(vars(args).items()):
     logging.debug("%s: %r", arg, value)
 
-dotfiles_path = os.path.dirname(__file__)
+# path magic does this: get the absolute path of this script, then get to the parent of its parent
+dotfiles_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 logging.debug("scripts basepath: " + dotfiles_path)
 
 ## ask for writing to ${HOME}, be nice
-#if args.target == os.environ['HOME']:
-#    should_we_proceed = raw_input("You're about to deploy to your ${HOME} folder, are you sure? [y/N] ")
-#    if should_we_proceed not in ['y', 'Y', 'Yes', 'YES']:
-#        logging.info("Aborted by user.")
-#        sys.exit()
+if args.target == os.environ['HOME']:
+    should_we_proceed = raw_input("You're about to deploy to your ${HOME} folder, are you sure? [y/N] ")
+    if should_we_proceed not in ['y', 'Y', 'Yes', 'YES']:
+        logging.info("Aborted by user.")
+        sys.exit()
 
 # ################################################################
 # folder conatining all the profiles, like the default one.
@@ -102,6 +107,21 @@ try:
     logging.info('The target was not found, created folder: ' + target_path)
 except Exception, e:
     pass
+
+# check for every file that would be replaced by deploying the profile
+# if it's existent AND is a link, ask for deletion
+for root, dirs, files in os.walk(target_path):
+    for file in files:
+        files_abs_path = os.path.join(target_path, file)
+        logging.debug('Checking for existing link of path: ' + files_abs_path)
+        if os.path.islink(files_abs_path):
+            logging.debug('Existing link found for: ' + files_abs_path)
+            should_we_proceed = raw_input('The link ' + files_abs_path + ' exists, should it be removed? [y/N] ')
+            if should_we_proceed not in ['y', 'Y', 'Yes', 'YES']:
+                logging.info("Aborted by user.")
+                sys.exit()
+            os.remove(file)
+            logging.info('Link ' + files_abs_path + ' removed.') 
 
 # ################################################################
 # copy over the profile to the operationing folder
