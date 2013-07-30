@@ -109,7 +109,7 @@ Could not download '${_url}'.
     ls -l
     echo "dotfiles installed successfully."
     echo "now deploying the default \"compatible\" profile"
-    ./dotfiles
+    ./bin/dotfiles
 }
 
 install_release

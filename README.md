@@ -67,7 +67,7 @@ maintain your own profiles with git submodules.
 You will get git completion and a nice promt with branch info when you've installed it but it's optional.
 
 ## Uninstall
-At some point in time, I'll provide an uninstall task. :/ hopefully soon.
+At some point in time, I'll provide an uninstall task. Currently, you could just delete the dotfiles folder from the location you've installed it to. Normally that is $HOME/.dotfiles.
 
 ## Author
 For bugs and hints as well as other suggestions, contact:
